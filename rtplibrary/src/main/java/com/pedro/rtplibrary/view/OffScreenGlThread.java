@@ -42,6 +42,7 @@ public class OffScreenGlThread
   private boolean muteVideo = false;
   private boolean isStreamHorizontalFlip = false;
   private boolean isStreamVerticalFlip = false;
+  private boolean keepAspectRatio = false;
 
   private boolean AAEnabled = false;
   private FpsLimiter fpsLimiter = new FpsLimiter();
@@ -190,6 +191,14 @@ public class OffScreenGlThread
     }
   }
 
+  public boolean isKeepAspectRatio() {
+    return keepAspectRatio;
+  }
+
+  public void setKeepAspectRatio(boolean keepAspectRatio) {
+    this.keepAspectRatio = keepAspectRatio;
+  }
+
   private void releaseSurfaceManager() {
     if (surfaceManager != null) {
       surfaceManager.release(true);
@@ -212,14 +221,14 @@ public class OffScreenGlThread
           surfaceManager.makeCurrent();
           textureManager.updateFrame();
           textureManager.drawOffScreen();
-          textureManager.drawScreen(encoderWidth, encoderHeight, false, 0, 0, true, false, false);
+          textureManager.drawScreen(encoderWidth, encoderHeight, keepAspectRatio, 0, 0, true, false, false);
           surfaceManager.swapBuffer();
 
           synchronized (sync) {
             if (surfaceManagerEncoder != null && !fpsLimiter.limitFPS()) {
               surfaceManagerEncoder.makeCurrent();
               if (muteVideo) {
-                textureManager.drawScreen(0, 0, false, 0, streamRotation, false,
+                textureManager.drawScreen(0, 0, keepAspectRatio, 0, streamRotation, false,
                     isStreamVerticalFlip, isStreamHorizontalFlip);
               } else {
                 textureManager.drawScreen(encoderWidth, encoderHeight, false, 0, streamRotation,
@@ -228,7 +237,7 @@ public class OffScreenGlThread
               //Necessary use surfaceManagerEncoder because preview manager size in background is 1x1.
               if (takePhotoCallback != null) {
                 takePhotoCallback.onTakePhoto(
-                    GlUtil.getBitmap(false, 0, encoderWidth, encoderHeight, encoderWidth, encoderHeight));
+                    GlUtil.getBitmap(keepAspectRatio, 0, encoderWidth, encoderHeight, encoderWidth, encoderHeight));
                 takePhotoCallback = null;
               }
               surfaceManagerEncoder.swapBuffer();
