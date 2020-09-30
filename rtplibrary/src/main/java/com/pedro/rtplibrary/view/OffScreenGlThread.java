@@ -36,7 +36,7 @@ public class OffScreenGlThread
   private final Semaphore semaphore = new Semaphore(0);
   private final BlockingQueue<Filter> filterQueue = new LinkedBlockingQueue<>();
   private final Object sync = new Object();
-  private int encoderWidth, encoderHeight;
+  private int encoderWidth, encoderHeight, previewWidth, previewHeight;
   private boolean loadAA = false;
   private int streamRotation;
   private boolean muteVideo = false;
@@ -70,6 +70,11 @@ public class OffScreenGlThread
   public void setEncoderSize(int width, int height) {
     this.encoderWidth = width;
     this.encoderHeight = height;
+  }
+
+  public void setPreviewSize(int width, int height) {
+    this.previewWidth = width;
+    this.previewHeight = height;
   }
 
   @Override
@@ -211,7 +216,7 @@ public class OffScreenGlThread
     releaseSurfaceManager();
     surfaceManager = new SurfaceManager();
     surfaceManager.makeCurrent();
-    textureManager.initGl(context, encoderWidth, encoderHeight, encoderWidth, encoderHeight);
+    textureManager.initGl(context, encoderWidth, encoderHeight, previewWidth == 0 ? encoderWidth : previewWidth, previewHeight == 0 ? encoderHeight : previewHeight);
     textureManager.getSurfaceTexture().setOnFrameAvailableListener(this);
     semaphore.release();
     try {
