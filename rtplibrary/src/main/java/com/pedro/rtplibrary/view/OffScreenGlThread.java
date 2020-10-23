@@ -236,7 +236,7 @@ public class OffScreenGlThread
                 textureManager.drawScreen(0, 0, keepAspectRatio, 0, streamRotation, false,
                     isStreamVerticalFlip, isStreamHorizontalFlip);
               } else {
-                textureManager.drawScreen(encoderWidth, encoderHeight, false, 0, streamRotation,
+                textureManager.drawScreen(encoderWidth, encoderHeight, keepAspectRatio, 0, streamRotation,
                     false, isStreamVerticalFlip, isStreamHorizontalFlip);
               }
               //Necessary use surfaceManagerEncoder because preview manager size in background is 1x1.
